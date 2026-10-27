@@ -1,0 +1,18 @@
+# secrets — never commit
+.env
+
+# runtime state (lives in HUGO_EYE_DATA_DIR by default, kept here as a guard)
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+node_modules/
+*.log
+tools/
+
+# Publication guard: local credential variants and tooling cache
+.env.*
+!.env.example
+*.tsbuildinfo

@@ -1,0 +1,11 @@
+HUGO Eye benchmark 2026-10-08T15:13:32.539Z
+live mjpeg: first frame (cold, keyframe-bound): 3658 ms
+live mjpeg: warm joins (3 runs): 49 ms, 81 ms, 96 ms
+live fmp4: first frame (new session): 1 ms
+live fmp4: warm join (tee): 2 ms
+live mjpeg: sustained throughput: 286 KB/s (~6.5 fps; hub warm — person detection keeps the session up)
+snapshot latency (3 runs): 364 ms, 333 ms, 307 ms
+hub state (sub): streaming, fps 12.5, keyframe interval 2.5 s, reconnects 0
+service CPU (node + ffmpeg children): 23.3 % of one core
+service (node) RSS: 229 MB
+disk free (media volume): 513 GB

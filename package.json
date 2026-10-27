@@ -1,0 +1,23 @@
+{
+  "name": "hugo-eye",
+  "version": "2.1.0",
+  "description": "HUGO Eye — local-first, privacy-first indoor camera platform",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/*.test.mjs",
+    "selftest": "node scripts/selftest.mjs",
+    "bench": "node scripts/bench.mjs",
+    "ai:setup": "node scripts/ai-setup.mjs",
+    "install:service": "bash scripts/install-service.sh",
+    "demo": "node scripts/demo.mjs",
+    "demo:camera": "node scripts/demo-camera.mjs"
+  },
+  "optionalDependencies": {
+    "onnxruntime-node": "^1.20.0"
+  }
+}

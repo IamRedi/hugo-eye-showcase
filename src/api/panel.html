@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUGO Eye</title>
+<style>
+  :root {
+    --bg: #0b1020; --panel: #131a2e; --card: #1a2340; --line: #26304f;
+    --text: #e8ecf8; --muted: #8b96b5; --accent: #4f8cff; --ok: #34c77b; --bad: #ff5d5d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 17px; margin: 0; letter-spacing: .4px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); }
+  .dot.ok { background: var(--ok); }
+  .muted { color: var(--muted); font-size: 12.5px; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .card h2 { margin: 0 0 10px; font-size: 13.5px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+  .viewer { width: 100%; aspect-ratio: 16/9; background: #060913; border-radius: 8px; object-fit: contain; }
+  button { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+           padding: 7px 12px; cursor: pointer; font-size: 13.5px; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:active { transform: translateY(1px); }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 210px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+  select, input { background: var(--card); color: var(--text); border: 1px solid var(--line);
+                  border-radius: 8px; padding: 7px 9px; font-size: 13.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 500; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--line); }
+  .pill.ok { color: var(--ok); border-color: var(--ok); }
+  .pill.bad { color: var(--bad); border-color: var(--bad); }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+  .gallery img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; cursor: pointer; }
+  #login { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10; }
+  #login .card { width: min(400px, 90vw); }
+  #login input { width: 100%; margin: 10px 0; }
+  .hidden { display: none !important; }
+  .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--card);
+           border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px; font-size: 13.5px; z-index: 20; }
+</style>
+</head>
+<body>
+
+<div id="login" class="hidden">
+  <div class="card">
+    <h2>HUGO Eye — sign in</h2>
+    <p class="muted">Enter the local API token (HUGO_EYE_API_TOKEN).</p>
+    <input id="token" type="password" placeholder="API token" autocomplete="off">
+    <button class="primary" id="loginBtn" style="width:100%">Unlock</button>
+    <p id="loginErr" class="muted" style="color:var(--bad)"></p>
+  </div>
+</div>
+
+<header>
+  <span class="dot" id="healthDot"></span>
+  <h1>HUGO Eye</h1>
+  <span class="muted" id="camLabel">connecting…</span>
+  <span style="flex:1"></span>
+  <span class="muted" id="healthInfo"></span>
+</header>
+
+<main>
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>Live — <span class="muted" id="streamName"></span></h2>
+      <img id="viewer" class="viewer" alt="live stream">
+      <div class="row">
+        <button id="snapBtn" class="primary">Snapshot now</button>
+        <select id="zoneSelect"></select>
+        <button id="reloadStream">Reload stream</button>
+        <span class="muted" id="snapInfo"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Gallery <span class="muted" id="zoneInfo"></span></h2>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>PTZ control</h2>
+      <div class="pad">
+        <button data-ptz="up_left">↖</button><button data-ptz="up">↑</button><button data-ptz="up_right">↗</button>
+        <button data-ptz="left">←</button><button data-ptz="stop">■</button><button data-ptz="right">→</button>
+        <button data-ptz="down_left">↙</button><button data-ptz="down">↓</button><button data-ptz="down_right">↘</button>
+      </div>
+      <div class="row">
+        <button data-ptz="zoom_in">Zoom +</button>
+        <button data-ptz="zoom_out">Zoom −</button>
+      </div>
+      <p class="muted" id="posInfo">position: —</p>
+    </div>
+
+    <div class="card">
+      <h2>Saved positions</h2>
+      <table><tbody id="presetRows"></tbody></table>
+      <div class="row">
+        <input id="newPresetName" placeholder="New position name" style="flex:1">
+        <select id="newZone">
+          <option value="">zone: same as name</option>
+        </select>
+        <button id="addPreset">Capture current view</button>
+      </div>
+      <p class="muted">Presets store the live PTZ coordinates. Intervals are configured per preset (future: in-panel).</p>
+    </div>
+
+    <div class="card">
+      <h2>Patrol</h2>
+      <div class="row">
+        <button id="patrolBtn">Run patrol now</button>
+        <span class="muted" id="patrolInfo"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>System</h2>
+      <p class="muted" id="adapterInfo"></p>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = sel => document.querySelector(sel)
+let cameraId = null
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts })
+  if (res.status === 401) { showLogin(); throw new Error('unauthorized') }
+  return res.json()
+}
+
+function showLogin() { $('#login').classList.remove('hidden') }
+
+$('#loginBtn').onclick = async () => {
+  const res = await fetch('/api/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: $('#token').value }),
+  })
+  if (res.ok) { $('#login').classList.add('hidden'); boot() }
+  else $('#loginErr').textContent = 'Invalid token (' + res.status + ')'
+}
+$('#token').addEventListener('keydown', e => { if (e.key === 'Enter') $('#loginBtn').click() })
+
+function toast(msg) {
+  const el = document.createElement('div')
+  el.className = 'toast'; el.textContent = msg
+  document.body.appendChild(el)
+  setTimeout(() => el.remove(), 3500)
+}
+
+async function boot() {
+  const health = await api('/api/health')
+  const cameras = (await api('/api/cameras')).cameras
+  if (!cameras.length) { $('#camLabel').textContent = 'no camera configured'; return }
+  const cam = cameras[0]
+  cameraId = cam.id
+  $('#camLabel').textContent = `${cam.name} · ${cam.model}`
+  $('#streamName').textContent = cam.name
+  const ok = health.cameras[cameraId]?.ok
+  $('#healthDot').classList.toggle('ok', Boolean(ok))
+  const h = health.cameras[cameraId]
+  $('#healthInfo').textContent = h
+    ? `rtsp ${h.rtspOk ? '✓' : '✗'} · onvif ${h.onvifOk ? '✓' : '✗'}`
+    : ''
+  const patrol = await api('/api/patrol/status')
+  $('#patrolInfo').textContent = patrol.enabledInConfig ? 'scheduler enabled' : 'scheduler disabled (manual only)'
+
+  // zones for the select
+  const zones = (await api(`/api/cameras/${cameraId}/zones`)).zones
+  const sel = $('#zoneSelect')
+  sel.innerHTML = '<option value="overview">zone: overview</option>' +
+    zones.map(z => `<option value="${z.zone}">zone: ${z.zone}</option>`).join('')
+  $('#newZone').innerHTML = '<option value="">zone: same as name</option>' +
+    zones.map(z => `<option value="${z.zone}">zone: ${z.zone}</option>`).join('')
+
+  startStream()
+  refreshPresets()
+  refreshGallery()
+  refreshPosition()
+  $('#adapterInfo').textContent = (await api('/api/adapter/manifest')).capabilities.map(c => c.action).join(' · ')
+}
+
+function startStream() {
+  $('#viewer').src = `/api/cameras/${cameraId}/stream.mjpeg?ts=${Date.now()}`
+}
+$('#reloadStream').onclick = startStream
+
+$('#snapBtn').onclick = async () => {
+  $('#snapInfo').textContent = 'capturing…'
+  try {
+    const r = await api(`/api/cameras/${cameraId}/snapshot`, {
+      method: 'POST', body: JSON.stringify({ zone: $('#zoneSelect').value || 'overview' }),
+    })
+    $('#snapInfo').textContent = `${r.bytes}B in ${r.ms}ms`
+    toast(`Snapshot saved to ${r.zone}`)
+    refreshGallery()
+  } catch (e) { $('#snapInfo').textContent = e.message }
+}
+
+async function refreshPosition() {
+  try {
+    const s = await api(`/api/cameras/${cameraId}/status`)
+    const p = s.position
+    $('#posInfo').textContent = p ? `position: pan ${p.pan.toFixed(3)} · tilt ${p.tilt.toFixed(3)} · zoom ${p.zoom.toFixed(2)}` : 'position: n/a'
+  } catch { /* ignore */ }
+}
+setInterval(refreshPosition, 5000)
+
+document.querySelectorAll('[data-ptz]').forEach(btn => {
+  btn.onclick = async () => {
+    await api(`/api/cameras/${cameraId}/ptz`, {
+      method: 'POST', body: JSON.stringify({ command: btn.dataset.ptz }),
+    })
+    setTimeout(refreshPosition, 1200)
+  }
+})
+
+async function refreshPresets() {
+  const presets = (await api(`/api/cameras/${cameraId}/presets`)).presets
+  const rows = $('#presetRows')
+  rows.innerHTML = ''
+  for (const p of presets) {
+    const tr = document.createElement('tr')
+    const status = p.lastCaptureStatus === 'ok' ? '<span class="pill ok">ok</span>'
+      : p.lastCaptureStatus === 'error' ? `<span class="pill bad" title="${p.lastCaptureError ?? ''}">error</span>` : ''
+    tr.innerHTML = `
+      <td>${p.name}<br><span class="muted">every ${p.timelapseEveryMin ?? '—'} min${p.timelapseAt ? ' @ ' + p.timelapseAt : ''} ${status}</span></td>
+      <td style="text-align:right">
+        <button data-goto="${p.id}">Go</button>
+        <button data-snapzone="${p.captureZone}">Snap</button>
+        <button data-del="${p.id}" title="delete">✕</button>
+      </td>`
+    rows.appendChild(tr)
+  }
+  rows.querySelectorAll('[data-goto]').forEach(b => b.onclick = async () => {
+    await api(`/api/cameras/${cameraId}/presets/${b.dataset.goto}/goto`, { method: 'POST' })
+    toast('Moving to preset'); setTimeout(refreshPosition, 2500)
+  })
+  rows.querySelectorAll('[data-snapzone]').forEach(b => b.onclick = async () => {
+    await api(`/api/cameras/${cameraId}/snapshot`, { method: 'POST', body: JSON.stringify({ zone: b.dataset.snapzone }) })
+    toast('Snapshot saved'); refreshGallery()
+  })
+  rows.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    if (!confirm('Delete this preset?')) return
+    await api(`/api/cameras/${cameraId}/presets/${b.dataset.del}`, { method: 'DELETE' })
+    refreshPresets()
+  })
+}
+
+$('#addPreset').onclick = async () => {
+  const name = $('#newPresetName').value.trim()
+  if (!name) return toast('Give the position a name first')
+  await api(`/api/cameras/${cameraId}/presets`, {
+    method: 'POST',
+    body: JSON.stringify({ name, captureZone: $('#newZone').value || undefined, timelapseEnabled: false }),
+  })
+  $('#newPresetName').value = ''
+  toast('Position saved'); refreshPresets()
+}
+
+$('#patrolBtn').onclick = async () => {
+  $('#patrolInfo').textContent = 'running…'
+  const r = await api('/api/patrol/run', { method: 'POST', body: JSON.stringify({ force: true, limit: 2 }) })
+  const okCount = r.results.filter(x => x.ok).length
+  $('#patrolInfo').textContent = `${okCount}/${r.results.length} captured`
+  refreshGallery(); refreshPresets()
+}
+
+async function refreshGallery() {
+  const items = (await api(`/api/cameras/${cameraId}/media?limit=24`)).items
+  const g = $('#gallery')
+  g.innerHTML = ''
+  for (const it of items) {
+    const img = document.createElement('img')
+    img.src = it.url
+    img.title = `${it.zone} · ${new Date(it.capturedAt).toLocaleString()}`
+    img.onclick = () => window.open(it.url, '_blank')
+    g.appendChild(img)
+  }
+  $('#zoneInfo').textContent = items.length ? `· latest ${items.length}` : '· no media yet'
+}
+
+boot().catch(err => {
+  if (err.message === 'unauthorized') showLogin()
+  else $('#camLabel').textContent = 'error: ' + err.message
+})
+</script>
+</body>
+</html>
