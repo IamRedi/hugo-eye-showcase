@@ -10,6 +10,8 @@ HUGO Eye is the first device of the HUGO family with a finished interface to [HU
 
 ![Live view with the demo camera: MSE/fMP4 video, PTZ pad, recording and microphone switches](docs/assets/live.png)
 
+> **Evidence and limitations:** This public snapshot was tested using test media, without a connected physical camera. Operation on the author's private mini PC with a real camera is documented in the author's records, not independently reverified by the public-snapshot tests. [Verification record (German)](EVIDENCE.md).
+
 ## At a glance
 
 | | |
