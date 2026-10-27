@@ -10,7 +10,6 @@ HUGO Eye ist das erste Gerät der HUGO-Familie mit einer fertigen Schnittstelle 
 
 ![Live-Ansicht mit Demo-Kamera: Bild über MSE/fMP4, PTZ-Steuerung, Aufnahme- und Mikrofon-Schalter](docs/assets/live.png)
 
-
 > **Nachweisstand und Grenzen:** Die öffentliche Fassung wurde mit Testmaterial und ohne angeschlossene Kamera geprüft. Der Betrieb auf dem privaten Mini-PC mit realer Kamera ist durch Angaben des Autors dokumentiert, nicht durch eine in diesem Snapshot wiederholte Hardwareprüfung. [Prüfprotokoll](EVIDENCE.md).
 
 ## Auf einen Blick
