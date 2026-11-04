@@ -10,6 +10,14 @@ HUGO Eye is the first device of the HUGO family with a finished interface to [HU
 
 ![Live view with the demo camera: MSE/fMP4 video, PTZ pad, recording and microphone switches](docs/assets/live.png)
 
+## Native product presentation · 4 November 2026
+
+HUGO Eye now has a native information page in **SQ, EN, DE and IT**, with its purpose, verified capabilities, workflow and actual application entry. Open **HUGO Eye → Overview** in the [application directory](https://www.redioncekrezi.de/en).
+
+[SQ](https://www.redioncekrezi.de/sq) · [EN](https://www.redioncekrezi.de/en) · [DE](https://www.redioncekrezi.de/de) · [IT](https://www.redioncekrezi.de/it)
+
+The presentation uses the application’s existing origin and access controls. It does not grant access to a private installation or turn this public offline showcase into an open service. The application UI language, implemented capabilities and readiness are unchanged. Existing demo screenshots still describe the same application.
+
 ## At a glance
 
 | | |
