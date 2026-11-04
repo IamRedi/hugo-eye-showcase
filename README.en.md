@@ -10,6 +10,13 @@ HUGO Eye is the first device of the HUGO family with a finished interface to [HU
 
 ![Live view with the demo camera: MSE/fMP4 video, PTZ pad, recording and microphone switches](docs/assets/live.png)
 
+<!-- PRESENTATION_FIRST_PUBLICATION_76F8B3EAC1CF -->
+## Public product website · 4 November 2026
+
+The [product website](https://eye.redioncekrezi.de/en.html) introduces the platform before opening the existing application entrance. Information is public; private-network or approved-account permissions still apply to the application. The overview is available in SQ/EN/DE/IT.
+
+Verified on 4 November 2026 with packet `76f8b3eac1cf` and [portfolio PR29](https://github.com/IamRedi/redion-portfolio-/pull/29). Application capabilities, existing media, stage and readiness are unchanged.
+
 ## At a glance
 
 | | |
