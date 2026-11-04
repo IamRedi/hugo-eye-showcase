@@ -100,3 +100,8 @@ GitHub Actions runs the tests, the panel build and gitleaks on every push.
 ## License
 
 Source available for reading and evaluation, not for reuse: see [LICENSE](LICENSE). The AI models are not part of this repository and carry their own licenses (YOLOv8n: AGPL-3.0; YuNet, SFace, CLIP: Apache-2.0/MIT), see `scripts/ai-setup.mjs`.
+
+<!-- PRESENTATION_FIRST_CANDIDATE_20261104 -->
+## Public website candidate · 4 November 2026
+
+The presentation-first update is prepared for review: [product website](https://eye.redioncekrezi.de/en.html). Publication and anonymous online verification remain pending; this candidate does not raise application readiness. The product website explains the platform before app sign-in. Private-network or approved-account access remains separate.
